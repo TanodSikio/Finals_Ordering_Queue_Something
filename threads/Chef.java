@@ -3,21 +3,22 @@ package threads;
 import model.Order;
 import services.OrderQueue;
 
-public class Chef implements Runnable {
+public class Chef extends Workers {
 
     private OrderQueue queue;
-    private int chefId;
+    private Waiter waiter;
 
-    public Chef(int chefId, OrderQueue queue) {
-        this.chefId = chefId;
+    public Chef(int chefId, OrderQueue queue, Waiter waiter) {
+        super(chefId, "Chef");
         this.queue = queue;
+        this.waiter = waiter;
     }
     
     @Override
     public void run() {
         while (true) {
             Order order = queue.getOrder();
-            System.out.println("Chef " + chefId + " is preparing order: " + order.getItemId() + " x" + order.getQuantity() + " for Customer " + order.getCustomerId());
+            System.out.println("Chef " + workerId + " is preparing order: " + order.getItemId() + " x" + order.getQuantity() + " for Customer " + order.getCustomerId());
 
             try {
                 Thread.sleep(2000); // Simulate time taken to prepare the order
@@ -25,7 +26,9 @@ public class Chef implements Runnable {
                 e.printStackTrace();
             }
 
-            System.out.println("Chef " + chefId + " has completed order: " + order.getItemId() + " x" + order.getQuantity() + " for Customer " + order.getCustomerId());
+            System.out.println("Chef " + workerId + " has completed order: " + order.getItemId() + " x" + order.getQuantity() + " for Customer " + order.getCustomerId());
+
+            waiter.addCompletedOrder(order);
         }
     }
 }
